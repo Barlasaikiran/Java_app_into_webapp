@@ -1,8 +1,8 @@
 terraform {
   backend "azurerm" {
-    resource_group_name = "prod-rg"
-    storage_account_name = "prodappserviceplan"
-    container_name = "prod-container"
-    key = "saikiran-prod-2002"
+    resource_group_name = "backend-resource-group"
+    storage_account_name = "backendstorageaccount"
+    container_name = "backend-container"
+    key = "prod-backend-2002"
   }
 }
