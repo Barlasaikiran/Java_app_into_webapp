@@ -219,7 +219,7 @@ stages:
             inputs:
               ConnectionType: 'AzureRM'
               azureSubscription: 'HDFC-Manual'
-              appType: 'webAppLinux'
+              appType: 'webAppContainer'
               WebAppName: 'Dev-linux-web-app'
               DockerNamespace: $(acrLoginServer)
               DockerRepository: javaapp
@@ -238,7 +238,7 @@ stages:
             inputs:
               ConnectionType: 'AzureRM'
               azureSubscription: 'HDFC-Manual'
-              appType: 'webAppLinux'
+              appType: 'webAppContainer'
               WebAppName: 'Qa-linux-web-app'
               DockerNamespace: $(acrLoginServer)
               DockerRepository: javaapp
@@ -257,7 +257,7 @@ stages:
             inputs:
               ConnectionType: 'AzureRM'
               azureSubscription: 'HDFC-Manual'
-              appType: 'webAppLinux'
+              appType: 'webAppContainer'
               WebAppName: 'Prod-linux-web-app'
               DockerNamespace: $(acrLoginServer)
               DockerRepository: javaapp
