@@ -11,6 +11,7 @@ variables:
   imageName: javaapp
   dockerfilePath: java-azure-webapp-cicd/Dockerfile
   imageTag: $(Build.BuildId)
+  acrLoginServer: acrregistry123.azurecr.io
 
 stages:
 
@@ -203,4 +204,68 @@ stages:
               tags: |
                 $(imageTag)
                 latest
+
+
+  - stage: Deploy_Dev
+    displayName: Deploy to Dev web app
+    dependsOn: Docker
+
+    jobs:
+      - job: DeployToDevWebApp
+        steps:
+          - checkout: self
+
+          - task: AzureRmWebAppDeployment@5
+            inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: 'HDFC-Manual'
+              appType: 'webAppContainer'
+              WebAppName: 'Dev-linux-web-app'
+              DockerNamespace: $(acrLoginServer)
+              DockerRepository: javaapp
+              DockerImageTag: $(imageTag)
+
+  - stage: Deploy_Qa
+    displayName: Deploy to Qa web app
+    dependsOn: Deploy_Dev
+
+    jobs:
+      - job: DeployToQaWebApp
+        steps:
+          - checkout: self
+
+          - task: AzureRmWebAppDeployment@5
+            inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: 'HDFC-Manual'
+              appType: 'webAppContainer'
+              WebAppName: 'Qa-linux-web-app'
+              DockerNamespace: $(acrLoginServer)
+              DockerRepository: javaapp
+              DockerImageTag: $(imageTag)
+ 
+  - stage: Deploy_Prod
+    displayName: Deploy to Prod web app
+    dependsOn: Deploy_Qa
+
+    jobs:
+      - job: DeployToProdWebApp
+        steps:
+          - checkout: self
+
+          - task: AzureRmWebAppDeployment@5
+            inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: 'HDFC-Manual'
+              appType: 'webAppContainer'
+              WebAppName: 'Prod-linux-web-app'
+              DockerNamespace: $(acrLoginServer)
+              DockerRepository: javaapp
+              DockerImageTag: $(imageTag)
+
+
+                          
+                                
+                              
+                          
 
