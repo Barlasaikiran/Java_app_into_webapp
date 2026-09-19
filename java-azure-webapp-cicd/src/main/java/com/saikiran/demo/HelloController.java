@@ -19,7 +19,7 @@ public class HelloController {
         <!DOCTYPE html>
         <html>
         <head>
-            <title>Java Web Application</title>
+            <title>Saikiran's Web Application</title>
 
             <style>
                 * {
