@@ -148,6 +148,12 @@ stages:
               cliProjectKey: 'Java-Azure-Web-App'
               cliProjectName: 'Java Azure Web App'
               cliSources: '.'
+          - script: |
+              cd app
+              chmod +x mvnw
+              ./mvnw clean compile sonar:sonar
+            displayName: "Run SonarQube Analysis"
+          
 
           - task: Maven@4
             inputs:
@@ -162,6 +168,8 @@ stages:
               effectivePomSkip: false
               sonarQubeRunAnalysis: true
               sqMavenPluginVersionChoice: 'latest'
+
+          
 
           - task: SonarQubePublish@8
             inputs:
