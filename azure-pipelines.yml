@@ -133,7 +133,7 @@ stages:
           - task: Maven@4
             inputs:
               azureSubscription: $(serviceConnection)
-              mavenPomFile: 'pom.xml'
+              mavenPomFile: 'app/pom.xml'
               publishJUnitResults: true
               testResultsFiles: '**/surefire-reports/TEST-*.xml'
               javaHomeOption: 'JDKVersion'
