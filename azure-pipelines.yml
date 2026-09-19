@@ -1,0 +1,93 @@
+trigger:
+  - main
+variables:
+  vmImage: "ubuntu-latest"
+  serviceConnection: "HDFC-Manual-New"
+  resourceGroup: "backend-resource-group"
+  storageAccount: "backendstorageaccount123"
+  containerName: "backend-container"
+
+stages:
+  - stage: Terraform
+    displayName: Terraform Infra Creation
+    
+    jobs:
+      - job: TerraformBuild
+        displayName: Terrform Build
+      
+        steps:
+          - checkout: self
+          - task: TerraformInstaller@1
+            inputs:
+              terraformVersion: 'latest'
+          - task: TerraformTask@5
+            displayName: "Terraform init Dev"
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/Root'
+              backendServiceArm: $(serviceConnection)
+              backendAzureRmResourceGroupName: $(resourceGroup)
+              backendAzureRmStorageAccountName: $(storageAccount)
+              backendAzureRmContainerName: $(containerName)
+              backendAzureRmKey: 'dev-backend-2002'
+          - task: TerraformTask@5
+            displayName: "Terraform apply Dev"
+            inputs:
+              provider: 'azurerm'
+              command: 'apply'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/Root'
+              commandOptions: '-var-file="Environments/Dev/dev.tfvars" -auto-approve'
+              environmentServiceNameAzureRM: $(serviceConnection)
+
+          #===========================DEV===================================
+          - task: TerraformTask@5
+            displayName: Terraform init QA
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/Root'
+              backendServiceArm: $(serviceConnection)
+              backendAzureRmResourceGroupName: $(resourceGroup)
+              backendAzureRmStorageAccountName: $(storageAccount)
+              backendAzureRmContainerName: $(containerName)
+              backendAzureRmKey: 'qa-backend-2002'
+              commandOptions: '-reconfigure'
+
+
+          - task: TerraformTask@5
+            displayName: "Terraform apply Qa"
+            inputs:
+              provider: 'azurerm'
+              command: 'apply'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/Root'
+              commandOptions: '-var-file="Environments/Qa/qa.tfvars" -auto-approve'
+              environmentServiceNameAzureRM: $(serviceConnection)
+
+
+          #===========================QA==========================================
+            
+          - task: TerraformTask@5
+            displayName: Terraform init Prod
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/Root'
+              backendServiceArm: $(serviceConnection)
+              backendAzureRmResourceGroupName: $(resourceGroup)
+              backendAzureRmStorageAccountName: $(storageAccount)
+              backendAzureRmContainerName: $(containerName)
+              backendAzureRmKey: 'prod-backend-2002'
+              commandOptions: '-reconfigure'
+
+
+          - task: TerraformTask@5
+            displayName: Terraform apply Prod
+            inputs:
+              provider: 'azurerm'
+              command: 'apply'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/Root'
+              commandOptions: '-var-file="Environments/Prod/prod.tfvars" -auto-approve'
+              environmentServiceNameAzureRM: $(serviceConnection)
+
+          #==========================Prod==========================================
