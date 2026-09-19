@@ -111,3 +111,41 @@ stages:
               workingDirectory: '$(System.DefaultWorkingDirectory)/Root'
               commandOptions: '-var-file="Environments/Prod/prod.tfvars" -auto-approve'
               environmentServiceNameAzureRM: $(serviceConnection)
+
+  - stage: SonarQube
+    displayName: SonarQube Analysis
+    dependsOn: Terraform
+    
+    jobs:
+      - job: SonarQube
+
+        steps:
+          - checkout: self
+          - task: SonarQubePrepare@8
+            inputs:
+              SonarQube: 'sonarqube'
+              scannerMode: 'cli'
+              configMode: 'manual'
+              cliProjectKey: 'Java-Azure-Web-App'
+              cliProjectName: 'Java Azure Web App'
+              cliSources: '.'
+
+          - task: Maven@4
+            inputs:
+              azureSubscription: $(serviceConnection)
+              mavenPomFile: 'pom.xml'
+              publishJUnitResults: true
+              testResultsFiles: '**/surefire-reports/TEST-*.xml'
+              javaHomeOption: 'JDKVersion'
+              mavenVersionOption: 'Default'
+              mavenAuthenticateFeed: false
+              effectivePomSkip: false
+              sonarQubeRunAnalysis: true
+              sqMavenPluginVersionChoice: 'latest'
+          - task: SonarQubePublish@8
+            inputs:
+              pollingTimeoutSec: '300'
+
+          
+
+        
