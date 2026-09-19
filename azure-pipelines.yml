@@ -37,7 +37,7 @@ stages:
               provider: 'azurerm'
               command: 'apply'
               workingDirectory: '$(System.DefaultWorkingDirectory)/Root'
-              commandOptions: '-var-file="Environments/Dev/dev.tfvars -auto-approve'
+              commandOptions: '-var-file="Environments/Dev/dev.tfvars" -auto-approve'
               environmentServiceNameAzureRM: $(serviceConnection)
 
           #===========================DEV===================================
@@ -61,7 +61,7 @@ stages:
               provider: 'azurerm'
               command: 'apply'
               workingDirectory: '$(System.DefaultWorkingDirectory)/Root'
-              commandOptions: '-var-file=Environments/Qa/qa.tfvars -auto-approve'
+              commandOptions: '-var-file="Environments/Qa/qa.tfvars" -auto-approve'
               environmentServiceNameAzureRM: $(serviceConnection)
 
 
@@ -87,7 +87,7 @@ stages:
               provider: 'azurerm'
               command: 'apply'
               workingDirectory: '$(System.DefaultWorkingDirectory)/Root'
-              commandOptions: '-var-file="Environments/Prod/prod.tfvars -auto-approve'
+              commandOptions: '-var-file="Environments/Prod/prod.tfvars" -auto-approve'
               environmentServiceNameAzureRM: $(serviceConnection)
 
           #==========================Prod==========================================
