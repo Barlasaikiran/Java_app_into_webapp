@@ -149,7 +149,7 @@ stages:
               cliProjectName: 'Java Azure Web App'
               cliSources: '.'
           - script: |
-              cd app
+              cd "$(System.DefaultWorkingDirectory)/java-azure-webapp-cicd"
               chmod +x mvnw
               ./mvnw clean compile sonar:sonar
             displayName: "Run SonarQube Analysis"
