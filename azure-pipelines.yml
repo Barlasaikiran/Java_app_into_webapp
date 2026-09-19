@@ -8,44 +8,59 @@ variables:
   containerName: "backend-container"
 
 stages:
+
   - stage: Terraform
     displayName: Terraform Infra Creation
-    
+
     jobs:
-      - job: TerraformBuild
-        displayName: Terrform Build
-      
+
+      - job: Terraform_Dev
+        displayName: Terraform Dev
         steps:
           - checkout: self
+
           - task: TerraformInstaller@1
             inputs:
               terraformVersion: 'latest'
+
           - task: TerraformTask@5
-            displayName: "Terraform init Dev"
+            displayName: Terraform Init Dev
             inputs:
-              provider: 'azurerm'
-              command: 'init'
+              provider: azurerm
+              command: init
               workingDirectory: '$(System.DefaultWorkingDirectory)/Root'
               backendServiceArm: $(serviceConnection)
               backendAzureRmResourceGroupName: $(resourceGroup)
               backendAzureRmStorageAccountName: $(storageAccount)
               backendAzureRmContainerName: $(containerName)
               backendAzureRmKey: 'dev-backend-2002'
+
           - task: TerraformTask@5
-            displayName: "Terraform apply Dev"
+            displayName: Terraform Apply Dev
             inputs:
-              provider: 'azurerm'
-              command: 'apply'
+              provider: azurerm
+              command: apply
               workingDirectory: '$(System.DefaultWorkingDirectory)/Root'
               commandOptions: '-var-file="Environments/Dev/dev.tfvars" -auto-approve'
               environmentServiceNameAzureRM: $(serviceConnection)
 
-          #===========================DEV===================================
-          - task: TerraformTask@5
-            displayName: Terraform init QA
+
+      - job: Terraform_QA
+        displayName: Terraform QA
+        dependsOn: Terraform_Dev
+
+        steps:
+          - checkout: self
+
+          - task: TerraformInstaller@1
             inputs:
-              provider: 'azurerm'
-              command: 'init'
+              terraformVersion: 'latest'
+
+          - task: TerraformTask@5
+            displayName: Terraform Init QA
+            inputs:
+              provider: azurerm
+              command: init
               workingDirectory: '$(System.DefaultWorkingDirectory)/Root'
               backendServiceArm: $(serviceConnection)
               backendAzureRmResourceGroupName: $(resourceGroup)
@@ -54,24 +69,32 @@ stages:
               backendAzureRmKey: 'qa-backend-2002'
               commandOptions: '-reconfigure'
 
-
           - task: TerraformTask@5
-            displayName: "Terraform apply Qa"
+            displayName: Terraform Apply QA
             inputs:
-              provider: 'azurerm'
-              command: 'apply'
+              provider: azurerm
+              command: apply
               workingDirectory: '$(System.DefaultWorkingDirectory)/Root'
               commandOptions: '-var-file="Environments/Qa/qa.tfvars" -auto-approve'
               environmentServiceNameAzureRM: $(serviceConnection)
 
 
-          #===========================QA==========================================
-            
-          - task: TerraformTask@5
-            displayName: Terraform init Prod
+      - job: Terraform_Prod
+        displayName: Terraform Prod
+        dependsOn: Terraform_QA
+
+        steps:
+          - checkout: self
+
+          - task: TerraformInstaller@1
             inputs:
-              provider: 'azurerm'
-              command: 'init'
+              terraformVersion: 'latest'
+
+          - task: TerraformTask@5
+            displayName: Terraform Init Prod
+            inputs:
+              provider: azurerm
+              command: init
               workingDirectory: '$(System.DefaultWorkingDirectory)/Root'
               backendServiceArm: $(serviceConnection)
               backendAzureRmResourceGroupName: $(resourceGroup)
@@ -80,14 +103,10 @@ stages:
               backendAzureRmKey: 'prod-backend-2002'
               commandOptions: '-reconfigure'
 
-
           - task: TerraformTask@5
-            displayName: Terraform apply Prod
+            displayName: Terraform Apply Prod
             inputs:
-              provider: 'azurerm'
-              command: 'apply'
+              provider: azurerm
+              command: apply
               workingDirectory: '$(System.DefaultWorkingDirectory)/Root'
               commandOptions: '-var-file="Environments/Prod/prod.tfvars" -auto-approve'
-              environmentServiceNameAzureRM: $(serviceConnection)
-
-          #==========================Prod==========================================
