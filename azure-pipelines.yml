@@ -110,3 +110,4 @@ stages:
               command: apply
               workingDirectory: '$(System.DefaultWorkingDirectory)/Root'
               commandOptions: '-var-file="Environments/Prod/prod.tfvars" -auto-approve'
+              environmentServiceNameAzureRM: $(serviceConnection)
