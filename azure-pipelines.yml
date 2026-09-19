@@ -9,6 +9,8 @@ variables:
 
 stages:
 
+#==========================Terraform infra dev,qa,prod=======================================
+
   - stage: Terraform
     displayName: Terraform Infra Creation
 
@@ -111,3 +113,70 @@ stages:
               workingDirectory: '$(System.DefaultWorkingDirectory)/Root'
               commandOptions: '-var-file="Environments/Prod/prod.tfvars" -auto-approve'
               environmentServiceNameAzureRM: $(serviceConnection)
+
+  #===============================Sonar Qube=========================================
+
+  - stage: SonarQube
+    displayName: SonarQube Analysis
+    dependsOn: Terraform
+    
+    jobs:
+      - job: SonarQube
+
+        steps:
+          - checkout: self
+
+
+          - task: JavaToolInstaller@1
+            displayName: "Use Java 21"
+            inputs:
+              versionSpec: "21"
+              jdkArchitectureOption: "x64"
+              jdkSourceOption: "PreInstalled"
+
+          - script: |
+              java -version
+              javac -version
+              mvn -version
+            displayName: "Check Java and Maven Version"
+              
+          - task: SonarQubePrepare@8
+            inputs:
+              SonarQube: 'sonarqube'
+              scannerMode: 'cli'
+              configMode: 'manual'
+              cliProjectKey: 'Java-Azure-Web-App'
+              cliProjectName: 'Java Azure Web App'
+              cliSources: '.'
+          - script: |
+              cd "$(System.DefaultWorkingDirectory)/java-azure-webapp-cicd"
+              chmod +x mvnw
+              ./mvnw clean compile sonar:sonar
+            displayName: "Run SonarQube Analysis"
+          
+
+          - task: Maven@4
+            inputs:
+              azureSubscription: $(serviceConnection)
+              mavenPomFile: 'java-azure-webapp-cicd/pom.xml'
+              options: '-Dsonar.branch.name='
+              publishJUnitResults: true
+              testResultsFiles: '**/surefire-reports/TEST-*.xml'
+              javaHomeOption: 'JDKVersion'
+              mavenVersionOption: 'Default'
+              mavenAuthenticateFeed: false
+              effectivePomSkip: false
+              sonarQubeRunAnalysis: true
+              sqMavenPluginVersionChoice: 'latest'
+
+          
+
+          - task: SonarQubePublish@8
+            inputs:
+              pollingTimeoutSec: '300'
+
+  #=======================Docker Build and Push to ACR ===========================================
+
+          
+
+        
