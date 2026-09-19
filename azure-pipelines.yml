@@ -9,6 +9,8 @@ variables:
 
 stages:
 
+#==========================Terraform infra dev,qa,prod=======================================
+
   - stage: Terraform
     displayName: Terraform Infra Creation
 
@@ -112,6 +114,8 @@ stages:
               commandOptions: '-var-file="Environments/Prod/prod.tfvars" -auto-approve'
               environmentServiceNameAzureRM: $(serviceConnection)
 
+  #===============================Sonar Qube=========================================
+
   - stage: SonarQube
     displayName: SonarQube Analysis
     dependsOn: Terraform
@@ -149,6 +153,7 @@ stages:
             inputs:
               azureSubscription: $(serviceConnection)
               mavenPomFile: 'java-azure-webapp-cicd/pom.xml'
+              options: '-Dsonar.branch.name='
               publishJUnitResults: true
               testResultsFiles: '**/surefire-reports/TEST-*.xml'
               javaHomeOption: 'JDKVersion'
@@ -157,9 +162,12 @@ stages:
               effectivePomSkip: false
               sonarQubeRunAnalysis: true
               sqMavenPluginVersionChoice: 'latest'
+
           - task: SonarQubePublish@8
             inputs:
               pollingTimeoutSec: '300'
+
+  #=======================Docker Build and Push to ACR ===========================================
 
           
 
