@@ -2,7 +2,7 @@ trigger:
   - main
 variables:
   vmImage: "ubuntu-latest"
-  serviceConnection: "HDFC-Manual-New"
+  serviceConnection: "HDFC-Manual"
   resourceGroup: "backend-resource-group"
   storageAccount: "backendstorageaccount123"
   containerName: "backend-container"
