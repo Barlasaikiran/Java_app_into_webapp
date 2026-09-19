@@ -121,6 +121,21 @@ stages:
 
         steps:
           - checkout: self
+
+
+          - task: JavaToolInstaller@1
+            displayName: "Use Java 21"
+            inputs:
+              versionSpec: "21"
+              jdkArchitectureOption: "x64"
+              jdkSourceOption: "PreInstalled"
+
+          - script: |
+              java -version
+              javac -version
+              mvn -version
+            displayName: "Check Java and Maven Version"
+              
           - task: SonarQubePrepare@8
             inputs:
               SonarQube: 'sonarqube'
