@@ -7,7 +7,7 @@ variables:
   resourceGroup: "backend-resource-group"
   storageAccount: "backendstorageaccount123"
   containerName: "backend-container"
-  acrServiceConnection: "acrServiceConnection"
+  acrServiceConnection: "acrServiceConnection123"
   imageName: javaapp
   dockerfilePath: java-azure-webapp-cicd/Dockerfile
   imageTag: $(Build.BuildId)
